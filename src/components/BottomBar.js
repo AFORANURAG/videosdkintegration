@@ -26,8 +26,10 @@ import {
   SwipeableDrawer,
   Tooltip,
   Typography,
-  useTheme,
 } from "@material-ui/core";
+import { useTheme } from "@emotion/react";
+import { ReactSketchCanvas } from "@shawngoh87/react-sketch-canvas";
+
 import {
   ArrowDropDown as ArrowDropDownIcon,
   MoreHoriz as MoreHorizIcon,
@@ -62,6 +64,8 @@ export function BottomBar({
   setSelectWebcamDeviceId,
   selectMicDeviceId,
   setSelectMicDeviceId,
+  whiteboardEnabled,
+  setWhiteBoardEnabled,
 }) {
   const RaiseHandBTN = ({ isMobile, isTab }) => {
     const { publish } = usePubSub("RAISE_HAND");
@@ -81,6 +85,31 @@ export function BottomBar({
       <OutlinedButton
         onClick={RaiseHand}
         tooltip={"Raise Hand"}
+        Icon={RaiseHandIcon}
+      />
+    );
+  };
+
+  const WhiteboardBTN = ({ isMobile, isTab }) => {
+    const { localParticipant } = useMeeting();
+    console.log(whiteboardEnabled);
+
+    return isMobile || isTab ? (
+      <MobileIconButton
+        id="RaiseHandBTN"
+        tooltipTitle={"WhiteBoard"}
+        Icon={RaiseHandIcon}
+        onClick={() => {
+          setWhiteBoardEnabled(!whiteboardEnabled);
+        }}
+        buttonText={"WhiteBoard"}
+      />
+    ) : (
+      <OutlinedButton
+        onClick={() => {
+          setWhiteBoardEnabled(!whiteboardEnabled);
+        }}
+        tooltip={"WhiteBoard"}
         Icon={RaiseHandIcon}
       />
     );
@@ -651,7 +680,9 @@ export function BottomBar({
       <MicBTN />
       <WebCamBTN />
       <RecordingBTN />
+      <WhiteboardBTN />
       <OutlinedButton Icon={MoreHorizIcon} onClick={handleClickFAB} />
+      <WhiteboardView />
       <SwipeableDrawer
         anchor={"bottom"}
         open={Boolean(open)}
@@ -698,6 +729,7 @@ export function BottomBar({
         <WebCamBTN />
         <ScreenShareBTN isMobile={isMobile} isTab={isTab} />
         <LeaveBTN />
+        <WhiteboardBTN />
       </div>
       <div className="flex items-center justify-center">
         <ChatBTN isMobile={isMobile} isTab={isTab} />

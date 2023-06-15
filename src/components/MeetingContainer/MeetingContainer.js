@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { BottomBar } from "../BottomBar";
+import { ReactSketchCanvas } from "@shawngoh87/react-sketch-canvas";
 import { SidebarConatiner } from "../SidebarContainer/SidebarContainer";
 import { ParticipantsViewer } from "./ParticipantView";
 import { PresenterView } from "./PresenterView";
@@ -13,6 +14,7 @@ import useWindowSize from "../../utils/useWindowSize";
 export const sideBarModes = {
   PARTICIPANTS: "PARTICIPANTS",
   CHAT: "CHAT",
+  WHITEBOARD: "WHITEBOARD",
 };
 
 export function MeetingContainer({
@@ -29,6 +31,7 @@ export function MeetingContainer({
   micEnabled,
   webcamEnabled,
 }) {
+  const [whiteboardEnabled, setWhiteBoardEnabled] = useState(false);
   const [containerHeight, setContainerHeight] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
   const mMeetingRef = useRef();
@@ -66,7 +69,7 @@ export function MeetingContainer({
   };
 
   function onParticipantJoined(participant) {
-    // console.log(" onParticipantJoined", participant);
+    console.log(" onParticipantJoined", participant);
   }
   function onParticipantLeft(participant) {
     // console.log(" onParticipantLeft", participant);
@@ -75,7 +78,7 @@ export function MeetingContainer({
     // console.log(" onSpeakerChanged", activeSpeakerId);
   };
   function onPresenterChanged(presenterId) {
-    // console.log(" onPresenterChanged", presenterId);
+    console.log(" onPresenterChanged", presenterId);
   }
   function onMainParticipantChanged(participant) {
     // console.log(" onMainParticipantChanged", participant);
@@ -97,7 +100,7 @@ export function MeetingContainer({
     }
   }
   function onRecordingStarted() {
-    // console.log(" onRecordingStarted");
+    console.log(" onRecordingStarted");
   }
   function onRecordingStopped() {
     // console.log(" onRecordingStopped");
@@ -189,6 +192,61 @@ export function MeetingContainer({
   const bottomBarHeight = 60;
   const [sideBarMode, setSideBarMode] = useState(null);
 
+  const WhiteboardView = () => {
+    //We will define a refernce for our canvas
+    const canvasRef = useRef();
+    const { localParticipant } = useMeeting();
+
+    const { publish } = usePubSub("WHITEBOARD", {
+      onMessageReceived: (message) => {
+        //Check if the stroke is from remote participant only
+        if (message.senderId !== localParticipant.id) {
+          canvasRef.current.loadPaths(JSON.parse(message.message));
+        }
+      },
+      onOldMessagesReceived: (messages) => {
+        messages.map((message) => {
+          canvasRef.current.loadPaths(JSON.parse(message.message));
+        });
+      },
+    });
+
+    //We will define the props required by the canvas element that we are using
+    const canvasProps = {
+      width: "100%",
+      height: "500px",
+      backgroundImage:
+        "https://upload.wikimedia.org/wikipedia/commons/7/70/Graph_paper_scan_1600x1000_%286509259561%29.jpg",
+      preserveBackgroundImageAspectRatio: "none",
+      strokeWidth: 4,
+      eraserWidth: 5,
+      strokeColor: "#000000",
+      canvasColor: "#FFFFFF",
+      allowOnlyPointerType: "all",
+      withViewBox: false,
+    };
+    const onStroke = (stroke, isEraser) => {
+      // We will be setting the `persist:true` so that all the strokes
+      // are available for the participants who have recently joined
+      publish(JSON.stringify(stroke), { persist: true });
+    };
+    return (
+      <div
+        style={{
+          display: whiteboardEnabled ? "block" : "none",
+          marginTop: "50px",
+          // marginLeft: "80%",
+        }}
+      >
+        <ReactSketchCanvas
+          ref={canvasRef}
+          onStroke={onStroke}
+          {...canvasProps}
+        />
+      </div>
+    );
+  };
+
   usePubSub("RAISE_HAND", {
     onMessageReceived: (data) => {
       const localParticipantId = mMeeting?.localParticipant?.id;
@@ -242,7 +300,7 @@ export function MeetingContainer({
       {typeof localParticipantAllowedJoin === "boolean" ? (
         localParticipantAllowedJoin ? (
           <>
-            <div className={` flex flex-1 flex-row bg-gray-800 `}>
+            <div className={` flex flex-1 flex-row bg-white-800 `}>
               <div className={`flex flex-1 `}>
                 {isPresenting ? (
                   <PresenterView height={containerHeight - bottomBarHeight} />
@@ -254,6 +312,7 @@ export function MeetingContainer({
                   />
                 )}
               </div>
+              <WhiteboardView />
               <SidebarConatiner
                 height={containerHeight - bottomBarHeight}
                 setSideBarMode={setSideBarMode}
@@ -270,6 +329,8 @@ export function MeetingContainer({
               setSelectWebcamDeviceId={setSelectWebcamDeviceId}
               selectMicDeviceId={selectMicDeviceId}
               setSelectMicDeviceId={setSelectMicDeviceId}
+              whiteboardEnabled={whiteboardEnabled}
+              setWhiteBoardEnabled={setWhiteBoardEnabled}
             />
           </>
         ) : (

@@ -3,10 +3,8 @@ import { JoiningScreen } from "../components/JoiningScreen";
 import { MeetingContainer } from "../components/MeetingContainer/MeetingContainer";
 import { SnackbarProvider } from "notistack";
 import { LeaveScreen } from "../components/LeaveScreen";
-import { ThemeProvider, useMediaQuery, useTheme } from "@material-ui/core";
+import { ThemeProvider, useMediaQuery, useTheme } from "@mui/material";
 import { MeetingProvider } from "@videosdk.live/react-sdk";
-import generateMuiTheme from "../mui/theme";
-
 function MeetingAppContainer() {
   const [token, setToken] = useState("");
   const [meetingId, setMeetingId] = useState("");
@@ -100,6 +98,11 @@ function MeetingAppContainer() {
               meetingId,
               micEnabled: micOn,
               webcamEnabled: webcamOn,
+              whiteboardEnabled: true,
+              permissions: {
+                drawOnWhiteboard: true,
+                toggleWhiteboard: true,
+              },
               name: participantName ? participantName : "TestUser",
             }}
             token={token}

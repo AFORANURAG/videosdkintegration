@@ -7,7 +7,7 @@ import {
   Fade,
   Dialog,
   Slide,
-} from "@material-ui/core";
+} from "@mui/material";
 import { Close } from "@material-ui/icons";
 import { useMeeting } from "@videosdk.live/react-sdk";
 import React from "react";

@@ -33,7 +33,7 @@ export function MeetingDetailsScreen({
       }}
     >
       {iscreateMeetingClicked ? (
-        <div className="border border-solid border-gray-400 rounded-xl px-4 py-3  flex items-center justify-center">
+        <div className="border border-solid border-white-400 rounded-xl px-4 py-3  flex items-center justify-center">
           <p className="text-white text-base">Meeting code: {meetingId}</p>
           <button
             className="ml-2"

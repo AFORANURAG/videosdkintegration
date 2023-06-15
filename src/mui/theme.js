@@ -1,4 +1,4 @@
-import { createTheme, responsiveFontSizes } from "@material-ui/core/styles";
+import { createTheme, responsiveFontSizes } from "@mui/material";
 
 export default function generateMuiTheme(type, primary, secondary) {
   return responsiveFontSizes(
@@ -8,7 +8,7 @@ export default function generateMuiTheme(type, primary, secondary) {
       },
 
       palette: {
-        type: "dark",
+        type: "light",
         text: { primary: "#fff", secondary: "#9fa0a7" },
         success: { main: "#4aa96c" },
         error: { main: "#D32F2F" },

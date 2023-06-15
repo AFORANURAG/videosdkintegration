@@ -11,8 +11,8 @@ import {
   ThemeProvider,
   Typography,
   useMediaQuery,
-  useTheme,
 } from "@material-ui/core";
+import { useTheme } from "@emotion/react";
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useEffect, useRef, useState } from "react";
 import useResponsiveSize from "../utils/useResponsiveSize";

@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import generateMuiTheme from "../src/mui/theme";
-import { ThemeProvider } from "@material-ui/styles";
+import { ThemeProvider } from "@mui/material";
 
 const MeetingAppContainer = dynamic(
   () => import("../src/containers/MeetingAppContainer"),
